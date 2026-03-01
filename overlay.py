@@ -2,26 +2,26 @@ import cv2
 import numpy as np
 
 light_positions = [
-    (500, 200, (0, 255, 0))     # Green 1
-    (500, 250, (0, 255, 255))   # Yellow 1
-    (500, 300, (0, 0, 255)),    # Red 1 
+    (500, 200, (0, 255, 0)),     # Red 1
+    (500, 250, (0, 255, 255)),   # Yellow 1
+    (500, 300, (0, 0, 255)),     # Green 1
 
-    (200, 500, (0, 255, 0))     # Green 2
-    (250, 500, (0, 255, 255))   # Yellow 2
-    (300, 500, (0, 0, 255)),    # Red 2 
+    (200, 500, (0, 255, 0)),     # Red 2
+    (250, 500, (0, 255, 255)),   # Yellow 2
+    (300, 500, (0, 0, 255)),     # Green 2
 
-    (500, 700, (0, 0, 255))     # Red 3
-    (500, 750, (0, 255, 255))   # Yellow 3
-    (500, 800, (0, 255, 0)),    # Green 3
+    (500, 700, (0, 0, 255)),     # Red 3
+    (500, 750, (0, 255, 255)),   # Yellow 3
+    (500, 800, (0, 255, 0)),     # Green 3
 
-    (700, 500, (0, 0, 255))     # Red 4
-    (750, 500, (0, 255, 255))   # Yellow 4
-    (800, 500, (255, 0, 0)),    # Green 4 
+    (700, 500, (0, 0, 255)),     # Red 4
+    (750, 500, (0, 255, 255)),   # Yellow 4
+    (800, 500, (255, 0, 0)),     # Green 4
 
-    (500, 350, (255, 255, 255)) # White 1
-    (350, 500, (255, 255, 255)) # White 2
-    (500, 650, (255, 255, 255)) # White 3
-    (650, 500, (255, 255, 255)) # White 4
+    (500, 350, (255, 255, 255)), # White 1A + 1B
+    (350, 500, (255, 255, 255)), # White 2A + 2B
+    (500, 650, (255, 255, 255)), # White 3A + 3B
+    (650, 500, (255, 255, 255))  # White 4A + 4B
 ]
 
 # Mapping: Which index in your array corresponds to which light?
@@ -30,7 +30,10 @@ light_positions = [
 
 def draw_overlay(frame, pinValues):
     for i, is_on in enumerate(pinValues):
-        pos, color = light_positions[i][0:2], light_positions[i][2]
+        if i >= len(light_positions):
+            break
+        x, y, color = light_positions[i]
+        pos = (x, y)
         
         if is_on:
             # Draw a solid glowing circle
@@ -51,8 +54,8 @@ while True:
     if not ret: break
 
     # EXAMPLE: This is where you'd get your array from your logic
-    # [Red1, Green1, Red2, Green2]
-    current_logic_array = [True, False, False, True] 
+    # [R1, Y1, G1, R2, Y2, G2, R3, Y3, G3, R4, Y4, G4, W1A+W1B, W2A+W2B, W3A+W3B, W4A+W4B]
+    current_logic_array = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] 
 
     # Add the overlay
     frame = draw_overlay(frame, current_logic_array)
