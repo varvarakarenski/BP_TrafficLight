@@ -40,7 +40,8 @@
 #define BUTTON4A #
 #define BUTTON4B #
 
-//********IMPORTANT !!!!!!! DEFINE cars_piling_up!!!!!!!!!!!!!!! ******
+//********IMPORTANT !!!!!!! DEFINE ALL BOOLEAN VALUES (seen in code)!!!!!!!!!!!!!!! ******
+//define all cars_piling_up booleans for each segment (1-4) *set to false by default?
 
 
 void setup(){
@@ -109,6 +110,36 @@ void green1_3() {
         digitalWrite(GREEN3, HIGH);
     }
 }
+
+void green2_4() {
+    // Check for safety confirmation
+    bool crossTrafficIsStopped2_4 = (digitalRead(RED1) == HIGH && digitalRead(RED3) == HIGH); ///These booleans need to include CV data
+    bool noPedestrians2_4 = (digitalRead(WHITE2A) == LOW && digitalRead(WHITE2B) == LOW && digitalRead(WHITE4A) == LOW && digitalRead(WHITE4B) == LOW);
+    bool carsWaiting2_4 = (cars_piling_up2 == true || cars_piling_up4 == true);
+
+    if (carsWaiting2_4 == true && noPedestrians2_4 == true && crossTrafficIsStopped2_4 == true) {
+        digitalWrite(RED2, LOW);
+        digitalWrite(RED4, LOW);
+        digitalWrite(GREEN2, HIGH);
+        digitalWrite(GREEN4, HIGH);
+    }
+}
+
+// ~~~~~~ Red/Yellow Lights
+void red1_3() {
+    if (digitalRead(GREEN1) == HIGH && digitalRead(GREEN3) == HIGH && cars_piling_up2 == true || cars_piling_up4 == true) {
+        digitalWrite(GREEN1, LOW);
+        digitalWrite(GREEN3, LOW);
+        digitalWrite(YELLOW1, HIGH);
+        digitalWrite(YELLOW3, HIGH);
+        delay(5000); // extended yellow light duration for safety
+        digitalWrite(YELLOW1, LOW);
+        digitalWrite(YELLOW3, LOW);
+        digitalWrite(RED1, HIGH);
+        digitalWrite(RED3, HIGH);
+    }
+}
+
 void loop() {
    
 }
