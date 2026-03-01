@@ -1,8 +1,59 @@
 import cv2
 import numpy as np
 import socket
-import pickle
-import struct
+import json
+import threading
+
+# ── Config ────────────────────────────────────────────────────────────────────
+LISTEN_HOST = '0.0.0.0'  # listen on all interfaces
+LISTEN_PORT = 5006
+# ─────────────────────────────────────────────────────────────────────────────
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind((LISTEN_HOST, LISTEN_PORT))
+print(f"[OK] Dashboard receiver listening on port {LISTEN_PORT}")
+print(f"    Waiting for LED state from Communicator...\n")
+
+# Group labels for pretty printing
+GROUPS = {
+    "GREEN" : ["G1","G2","G3","G4"],
+    "YELLOW": ["Y1","Y2","Y3","Y4"],
+    "RED"   : ["R1","R2","R3","R4"],
+    "WALK"  : ["P1","P2","P3","P4"],
+}
+
+# shared state updated by listener thread
+latest_leds = [0] * 20
+latest_labels = {}
+state_lock = threading.Lock()
+
+
+def listener():
+    """Background thread that receives UDP packets and updates shared state."""
+    global latest_leds, latest_labels
+    while True:
+        data, addr = sock.recvfrom(65535)
+        try:
+            payload = json.loads(data.decode())
+            with state_lock:
+                latest_leds = payload.get("leds", latest_leds)
+                latest_labels = payload.get("labels", latest_labels)
+
+            # pretty-print the groups as before
+            lines = []
+            for group, keys in GROUPS.items():
+                active = [k for k in keys if latest_labels.get(k)]
+                lines.append(f"  {group:6s}: {', '.join(active) if active else '-'}")
+            print('\n'.join(lines))
+            print()
+
+        except (json.JSONDecodeError, KeyError) as e:
+            print(f"[!] Bad packet from {addr}: {e}")
+
+
+# start listener thread
+thread = threading.Thread(target=listener, daemon=True)
+thread.start()
 
 light_positions = [
     (500, 200, (0, 255, 0)),     # Red 1
@@ -73,17 +124,16 @@ def draw_overlay(frame, pinValues, base_w=1000, base_h=1000):
     return frame
 
 # --- Main Simulation Loop ---
-cap = cv2.VideoCapture(0) # 0 is your camera feed
+cap = cv2.VideoCapture(0) # 0 is camera feed
 
 while True:
     ret, frame = cap.read()
     if not ret: break
 
-    # EXAMPLE: This is where we'd get your array from your logic
-    # [R1, Y1, G1, R2, Y2, G2, R3, Y3, G3, R4, Y4, G4, W1A+W1B, W2A+W2B, W3A+W3B, W4A+W4B]
-    current_logic_array = [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0] 
+    with state_lock:
+        current_logic_array = list(latest_leds)
 
-    # Add the overlay
+    # Add the overlay (listener pads/truncates as needed)
     frame = draw_overlay(frame, current_logic_array)
     
     # Add a timestamp label
