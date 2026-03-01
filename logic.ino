@@ -62,44 +62,36 @@ void setup(){
 // ~~~~~~ White Lights
 void white1() {
     if (digitalRead(BUTTON1A) == HIGH && digitalRead(RED1) == HIGH && digitalRead(RED3) == HIGH) {
-        digitalWrite(WHITE1A, HIGH);
-        digitalWrite(WHITE1B, HIGH);
+        ledArray[12] = 1;
         delay(15000);
-        digitalWrite(WHITE1B, LOW);
-        digitalWrite(WHITE1A, LOW);
+        ledArray[12] = 0;
     }
 }
 
 
 void white2() {
     if (digitalRead(BUTTON2A) == HIGH && digitalRead(RED2) == HIGH && digitalRead(RED4) == HIGH) {
-        digitalWrite(WHITE2A, HIGH);
-        digitalWrite(WHITE2B, HIGH);
+        ledArray[13] = 1;
         delay(15000);
-        digitalWrite(WHITE2B, LOW);
-        digitalWrite(WHITE2A, LOW);
+        ledArray[13] = 0;
     }
 }
 
 
 void white3() {
     if (digitalRead(BUTTON3A) == HIGH && digitalRead(RED3) == HIGH && digitalRead(RED1) == HIGH) {
-        digitalWrite(WHITE3A, HIGH);
-        digitalWrite(WHITE3B, HIGH);
+        ledArray[14] = 1;
         delay(15000);
-        digitalWrite(WHITE3B, LOW);
-        digitalWrite(WHITE3A, LOW);
+        ledArray[14] = 0;
     }
 }
 
 
 void white4() {
     if (digitalRead(BUTTON4A) == HIGH && digitalRead(RED4) == HIGH && digitalRead(RED2) == HIGH) {
-        digitalWrite(WHITE4A, HIGH);
-        digitalWrite(WHITE4B, HIGH);
+        ledArray[15] = 1;
         delay(15000);
-        digitalWrite(WHITE4B, LOW);
-        digitalWrite(WHITE4A, LOW);
+        ledArray[15] = 0;
     }
 }
 
@@ -108,19 +100,19 @@ void white4() {
 // ~~~~~~ Green Lights
 void green1_3() {
     if (carsWaiting1_3 == true && noPedestrians1_3 == true && crossTrafficIsStopped1_3 == true) {
-        digitalWrite(RED1, LOW);
-        digitalWrite(RED3, LOW);
-        digitalWrite(GREEN1, HIGH);
-        digitalWrite(GREEN3, HIGH);
+        ledArray[0] = 0;
+        ledArray[6] = 0;
+        ledArray[2] = 1;
+        ledArray[8] = 1;
     }
 }
 
 void green2_4() {
     if (carsWaiting2_4 == true && noPedestrians2_4 == true && crossTrafficIsStopped2_4 == true) {
-        digitalWrite(RED2, LOW);
-        digitalWrite(RED4, LOW);
-        digitalWrite(GREEN2, HIGH);
-        digitalWrite(GREEN4, HIGH);
+        ledArray[3] = 0;
+        ledArray[9] = 0;
+        ledArray[5] = 1;
+        ledArray[11] = 1;
     }
 }
 
