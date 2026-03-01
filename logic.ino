@@ -43,6 +43,15 @@
 //********IMPORTANT !!!!!!! DEFINE ALL BOOLEAN VALUES (seen in code)!!!!!!!!!!!!!!! ******
 //define all cars_piling_up booleans for each segment (1-4) *set to false by default?
 
+bool crossTrafficIsStopped1_3 = (digitalRead(RED2) == HIGH && digitalRead(RED4) == HIGH); ///These booleans need to include CV data
+bool noPedestrians1_3 = (digitalRead(WHITE1A) == LOW && digitalRead(WHITE1B) == LOW && digitalRead(WHITE3A) == LOW && digitalRead(WHITE3B) == LOW);
+bool carsWaiting1_3 = (cars_piling_up1 == true || cars_piling_up3 == true);
+
+bool crossTrafficIsStopped2_4 = (digitalRead(RED1) == HIGH && digitalRead(RED3) == HIGH); ///These booleans need to include CV data
+bool noPedestrians2_4 = (digitalRead(WHITE2A) == LOW && digitalRead(WHITE2B) == LOW && digitalRead(WHITE4A) == LOW && digitalRead(WHITE4B) == LOW);
+bool carsWaiting2_4 = (cars_piling_up2 == true || cars_piling_up4 == true);
+
+
 
 void setup(){
 
@@ -98,11 +107,6 @@ void white4() {
 
 // ~~~~~~ Green Lights
 void green1_3() {
-    // Check for safety confirmation
-    bool crossTrafficIsStopped1_3 = (digitalRead(RED2) == HIGH && digitalRead(RED4) == HIGH); ///These booleans need to include CV data
-    bool noPedestrians1_3 = (digitalRead(WHITE1A) == LOW && digitalRead(WHITE1B) == LOW && digitalRead(WHITE3A) == LOW && digitalRead(WHITE3B) == LOW);
-    bool carsWaiting1_3 = (cars_piling_up1 == true || cars_piling_up3 == true);
-
     if (carsWaiting1_3 == true && noPedestrians1_3 == true && crossTrafficIsStopped1_3 == true) {
         digitalWrite(RED1, LOW);
         digitalWrite(RED3, LOW);
@@ -112,11 +116,6 @@ void green1_3() {
 }
 
 void green2_4() {
-    // Check for safety confirmation
-    bool crossTrafficIsStopped2_4 = (digitalRead(RED1) == HIGH && digitalRead(RED3) == HIGH); ///These booleans need to include CV data
-    bool noPedestrians2_4 = (digitalRead(WHITE2A) == LOW && digitalRead(WHITE2B) == LOW && digitalRead(WHITE4A) == LOW && digitalRead(WHITE4B) == LOW);
-    bool carsWaiting2_4 = (cars_piling_up2 == true || cars_piling_up4 == true);
-
     if (carsWaiting2_4 == true && noPedestrians2_4 == true && crossTrafficIsStopped2_4 == true) {
         digitalWrite(RED2, LOW);
         digitalWrite(RED4, LOW);
@@ -127,7 +126,7 @@ void green2_4() {
 
 // ~~~~~~ Red/Yellow Lights
 void red1_3() {
-    if (digitalRead(GREEN1) == HIGH && digitalRead(GREEN3) == HIGH && cars_piling_up2 == true || cars_piling_up4 == true) {
+    if (digitalRead(GREEN1) == HIGH && digitalRead(GREEN3) == HIGH && cars_waiting2_4 == true) {
         digitalWrite(GREEN1, LOW);
         digitalWrite(GREEN3, LOW);
         digitalWrite(YELLOW1, HIGH);
@@ -140,6 +139,19 @@ void red1_3() {
     }
 }
 
+void red2_4() {
+    if (digitalRead(GREEN2) == HIGH && digitalRead(GREEN4) == HIGH && cars_waiting1_3 == true) {
+        digitalWrite(GREEN2, LOW);
+        digitalWrite(GREEN4, LOW);
+        digitalWrite(YELLOW2, HIGH);
+        digitalWrite(YELLOW4, HIGH);
+        delay(5000); // extended yellow light duration for safety
+        digitalWrite(YELLOW2, LOW);
+        digitalWrite(YELLOW4, LOW);
+        digitalWrite(RED2, HIGH);
+        digitalWrite(RED4, HIGH);
+    }
+}
 void loop() {
    
 }
